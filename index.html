@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <footer>
+        <ons-page>
+            <ons-toolbar>
+              <div class="center">List Task</div>
+            </ons-toolbar>
+          
+            <ons-tabbar swipeable position="bottom">
+              <ons-tab page="tab1.html" label="List Tasks" icon="ion-ios-home, material:md-home" active>
+              </ons-tab>
+              <ons-tab page="tab2.html" label="Add Task" icon="md-settings" active-icon="md-face">
+              </ons-tab>
+              <ons-tab page="tab3.html" label="Setting" icon="md-settings" active-icon="md-face">
+              </ons-tab>
+            </ons-tabbar>
+            <!-- <ons-pull-hook id="pull-hook"></ons-pull-hook> -->
+        </ons-page>
+    </footer>
+    <div class="main-container">
+        <template id="tab1.html">
+            <ons-page id="Tab1">
+                <ons-list>
+                    <ons-lazy-repeat id="infinite-list"></ons-lazy-repeat>
+                    <!-- <ons-list-item>
+                        <div class="left">
+                            <ons-icon icon="md-face" class="list-item__icon"></ons-icon>
+                        </div>
+                        <div class="center">
+                            <span class="list-item__title">Item 1</span>
+                            <span class="list-item__subtitle">Description</span>
+                        </div>
+                        <div class="right">
+                            <ons-switch></ons-switch>
+                        </div>
+                    </ons-list-item> -->
+                </ons-list>
+            </ons-page>
+          </template>
+          
+          <template id="tab2.html">
+            <ons-page id="Tab2">
+                <div id="page2-container">
+                    <p style="text-align: left;">
+                        Enter Task Title
+                      </p>
+                      <p>
+                        <ons-input id="task-title" modifier="underbar" type="text" placeholder="task title" float></ons-input>
+                      </p>
+                      <p style="text-align: left;">
+                        Enter Task Description
+                      </p>
+                      <p>
+                        <ons-input id="task-des" modifier="underbar" type="text" placeholder="task description" float></ons-input>
+                      </p>
+                      <p style="margin-top: 30px;">
+                        <ons-button id="add-task-button">Add Task</ons-button>
+                      </p>
+                </div>
+            </ons-page>
+          </template>
+
+          <template id="tab3.html">
+            <ons-page id="Tab3">
+              <p style="text-align: center;">
+                This is the 3 page.
+              </p>
+            </ons-page>
+          </template>
+    </div>
+<script type="module" src="script.js"></script>
+<script type="module" src="tasks-db.js"></script>
+</body>
+</html>
