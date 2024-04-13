@@ -87,6 +87,104 @@ class WordsDB {
             });
         });
     }
+
+    // save to local storage
+    saveToLocalStorage(words) {
+        const data = [];
+        words.forEach((doc) => {
+            const item = doc.data();
+            const id = doc.id;
+            let word = {
+                id: id,
+                word: item.word,
+                level: item.level,
+                url: item.url
+            };
+            data.push(word);
+        });
+        // 2. Open a connection to IndexedDB
+        const request = indexedDB.open("myDatabase", 1);
+
+        request.onerror = function(event) {
+            console.error("IndexedDB error:", event.target.error);
+        };
+
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            
+            // 3. Store the data in IndexedDB
+            const transaction = db.transaction(["data"], "readwrite");
+            const objectStore = transaction.objectStore("data");
+            data.forEach(item => {
+                const request = objectStore.add(item);
+                request.onerror = function(event) {
+                    console.error("Error adding item to IndexedDB:", event.target.error);
+                };
+            });
+            
+            transaction.oncomplete = function(event) {
+                console.log("Data saved to IndexedDB successfully");
+            };
+        };
+        request.onupgradeneeded = function(event) {
+            const db = event.target.result;
+            console.log("Upgrade needed");
+            // Create an object store if it doesn't exist
+            if (!db.objectStoreNames.contains("data")) {
+              db.createObjectStore("data", { keyPath: "id" });
+            }
+          };
+
+    }
+
+    syncData() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open('myDatabase', 1);
+      
+          request.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(['data'], 'readonly');
+            const objectStore = transaction.objectStore('data');
+      
+            const getData = objectStore.getAll();
+      
+            getData.onsuccess = function() {
+              const data = getData.result;
+              // Send data to Firebase (e.g., using Firebase SDK)
+              // Assume you have a function to send data to Firebase
+              sendDataToFirebase(data)
+                .then(() => {
+                  // Data sent successfully, clear data from IndexedDB
+                  const clearRequest = objectStore.clear();
+                  clearRequest.onsuccess = function() {
+                    console.log('Data sent and cleared from IndexedDB');
+                    resolve();
+                  };
+                })
+                .catch(error => {
+                  console.error('Error sending data to Firebase:', error);
+                  reject(error);
+                });
+            };
+          };
+        });
+      }
+
+     sendDataToFirebase(data) {
+        return new Promise((resolve, reject) => {
+          // Send data to Firebase (using Firebase SDK or other methods)
+          // For example:
+          const db = firebase.firestore();
+      
+          // Loop through the data and save it to Firebase
+          data.forEach(item => {
+            db.collection('data').add(item);
+          });
+      
+          // Resolve the promise once all data is sent
+          resolve();
+        });
+      }
 }
 
 export default new WordsDB();

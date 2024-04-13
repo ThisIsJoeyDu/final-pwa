@@ -5,6 +5,8 @@ var words = [];
 let swRegistration = null;
 window.fn = {};
 var apiUrl = '';
+var lati = '';
+var longi = '';
 
 //tab change
 document.addEventListener('prechange', function(event) {
@@ -22,7 +24,6 @@ document.addEventListener('prechange', function(event) {
 
 // document ready
 $('document').ready(function() {
-    console.log('document ready');
     //registerServiceWorker; 
     registerServiceWorker(); 
     // binding add task button
@@ -37,12 +38,18 @@ $('document').ready(function() {
             requestAction();
         }
     });
+
+    $('#location-switch').on('change', e => {
+        if (e.originalEvent.value) {
+            // get current location
+            getLocation();
+        }
+    });
     // get all words
     getAll();
 });
 
 function createListItem(item) {
-    console.log(item);
     return ons.createElement(
         "<div class='item-container'>" + 
         "<ons-list-item  id='list-item'>" +
@@ -63,6 +70,7 @@ function getAll() {
             querySnapshot.forEach((doc) => {
                 words.push(doc.data());
             });
+            // clear the local storage
             var infiniteList = document.getElementById('infinite-list');
             infiniteList.delegate = {
                 createItemContent: function(i) {
@@ -78,10 +86,6 @@ function getAll() {
                 item.addEventListener('click', function() {
                     createAlertDialog(querySnapshot.docs[index]);
                 });
-
-                // item.addEventListener('longpress', function() {
-                //     console.log('long press');
-                // });
             });
             if (words.length == 0) {
                 $('#no-data-container').show();
@@ -153,6 +157,43 @@ function requestAction() {
             sendAction();
         }
     });
+}
+
+// get permission for location
+function getLocation() {
+    // Check if the Geolocation API is supported by the browser
+    if ('geolocation' in navigator) {
+    // Geolocation is supported
+    navigator.geolocation.getCurrentPosition(
+      // Success callback function
+      function(position) {
+        // Get latitude and longitude from the position object
+        lati = position.coords.latitude;
+        longi = position.coords.longitude;
+      },
+      // Error callback function
+      function(error) {
+        // Handle errors
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            ons.notification.toast('User denied the request for Geolocation.', { timeout: 1000, animation: 'fall' });
+            break;
+          case error.POSITION_UNAVAILABLE:
+            ons.notification.toast('Location information is unavailable.', { timeout: 1000, animation: 'fall' });
+            break;
+          case error.TIMEOUT:
+            ons.notification.toast('The request to get user location timed out.', { timeout: 1000, animation: 'fall' });
+            break;
+          case error.UNKNOWN_ERROR:
+            ons.notification.toast('An unknown error occurred.', { timeout: 1000, animation: 'fall' });
+            break;
+        }
+      }
+    );
+        } else {
+    // Geolocation is not supported
+    ons.notification.toast('Geolocation is not supported by this browser.', { timeout: 1000, animation: 'fall' });
+    }
 }
 
 // send notification
@@ -227,8 +268,6 @@ function deleteWord(doc) {
         });
     });
 }
-
-
 
 function searchWord() {
     if (document.getElementById('search-input').value.trim() === '') {
