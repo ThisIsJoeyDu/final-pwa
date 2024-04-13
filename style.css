@@ -4,3 +4,37 @@
     align-items: center;
     padding: 20px;
 }
+
+#page2-center {
+    display: flex;
+    flex-direction: column;
+}
+
+.required:after {
+    content:" *";
+    color: red;
+}
+
+#page1-container {
+    background-color: black;
+}
+
+.item-container {
+    padding: 5px;
+}
+
+.item-container .center {
+    padding: 4px;
+    margin-right: 10px;
+    background-color: lightgray;
+}
+
+
+#no-data-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}

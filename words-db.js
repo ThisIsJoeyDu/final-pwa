@@ -2,7 +2,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, collection, getDocs, updateDoc, doc, addDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js';
 
 
-class TasksDB {
+class WordsDB {
     constructor() {
         this.db = null;
         this.isAvailable = false;
@@ -42,12 +42,13 @@ class TasksDB {
     }
 
     //add new song
-    addNewSong(title, des) {
+    addNewSong(title, des, date) {
         return new Promise((resolve, reject) => {
             const dbCollection = collection(this.db, "tasks");
             addDoc(dbCollection, {
                 title: title,
                 des: des,
+                date: date
             })
             .then((docRef) => {
                 resolve(docRef);
@@ -73,6 +74,21 @@ class TasksDB {
         });
     }
 
+    // delete song
+    // remove song
+    remove(item) {
+        return new Promise((resolve, reject) => {
+            const dbCollection = collection(this.db, "tasks");
+            const docRef = doc(dbCollection, item.id);
+            deleteDoc(docRef)
+            .then(() => {
+                resolve();
+            })
+            .catch((error) => {
+                reject(error.message);
+            });
+        });
+    }
 }
 
-export default new TasksDB();
+export default new WordsDB();

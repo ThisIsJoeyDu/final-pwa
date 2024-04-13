@@ -12,78 +12,94 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <title>Document</title>
 </head>
 <body>
-    <footer>
+    <div id="tabbar-container">
         <ons-page>
             <ons-toolbar>
-              <div class="center">List Task</div>
+              <div class="center">Vacabulary List</div>
             </ons-toolbar>
-          
             <ons-tabbar swipeable position="bottom">
-              <ons-tab page="tab1.html" label="List Tasks" icon="ion-ios-home, material:md-home" active>
+              <ons-tab page="tab1.html" label="Words" icon="fa-arrow-up-z-a" active>
               </ons-tab>
-              <ons-tab page="tab2.html" label="Add Task" icon="md-settings" active-icon="md-face">
+              <ons-tab page="tab2.html" label="Add" icon="fa-plus">
               </ons-tab>
-              <ons-tab page="tab3.html" label="Setting" icon="md-settings" active-icon="md-face">
+              <ons-tab page="tab3.html" label="Setting" icon="md-settings">
               </ons-tab>
             </ons-tabbar>
             <!-- <ons-pull-hook id="pull-hook"></ons-pull-hook> -->
         </ons-page>
-    </footer>
+    </div>
     <div class="main-container">
         <template id="tab1.html">
             <ons-page id="Tab1">
-                <ons-list>
-                    <ons-lazy-repeat id="infinite-list"></ons-lazy-repeat>
-                    <!-- <ons-list-item>
-                        <div class="left">
-                            <ons-icon icon="md-face" class="list-item__icon"></ons-icon>
-                        </div>
-                        <div class="center">
-                            <span class="list-item__title">Item 1</span>
-                            <span class="list-item__subtitle">Description</span>
-                        </div>
-                        <div class="right">
-                            <ons-switch></ons-switch>
-                        </div>
-                    </ons-list-item> -->
-                </ons-list>
+                <div id="page1-container">
+                    <ons-list>
+                        <ons-lazy-repeat id="infinite-list"></ons-lazy-repeat>
+                    </ons-list>
+                </div>
+                <div id="no-data-container">
+                    <p>No Data!</p>
+                </div>
             </ons-page>
           </template>
           
           <template id="tab2.html">
             <ons-page id="Tab2">
                 <div id="page2-container">
-                    <p style="text-align: left;">
-                        Enter Task Title
-                      </p>
-                      <p>
-                        <ons-input id="task-title" modifier="underbar" type="text" placeholder="task title" float></ons-input>
-                      </p>
-                      <p style="text-align: left;">
-                        Enter Task Description
-                      </p>
-                      <p>
-                        <ons-input id="task-des" modifier="underbar" type="text" placeholder="task description" float></ons-input>
-                      </p>
-                      <p style="margin-top: 30px;">
-                        <ons-button id="add-task-button">Add Task</ons-button>
-                      </p>
+                    <div id="page2-center">
+                        <p style="text-align: center; margin-top: 10px;">
+                          <ons-search-input
+                            placeholder="Search"
+                            onchange="ons.notification.alert('Searched for: ' + this.value)"
+                          ></ons-search-input>
+                        </p>
+                        <ons-select id="choose-sel" onchange="editSelects(event)">
+                          <option value="basic">Low</option>
+                          <option value="material">Normal</option>
+                          <option value="underbar">High</option>
+                        </ons-select>
+                        <p style="margin-top: 30px;">
+                        <ons-button id="add-task-button">Search</ons-button>
+                        </p>
+                    </div>
+                    <div id="result-container">    
+                    </div>
                 </div>
             </ons-page>
           </template>
 
           <template id="tab3.html">
-            <ons-page id="Tab3">
-              <p style="text-align: center;">
-                This is the 3 page.
-              </p>
+            <ons-page>
+                <ons-list>
+                  <ons-list-header>Settings</ons-list-header>
+                  <ons-list-item>
+                    <div class="center">
+                      Enable Notifiction
+                    </div>
+                    <div class="right">
+                      <ons-switch id="notification-switch"></ons-switch>
+                    </div>
+                  </ons-list-item>
+                </ons-list>
             </ons-page>
           </template>
     </div>
+    <template id="alert-dialog.html">
+        <ons-alert-dialog id="my-alert-dialog" modifier="rowfooter">
+          <div class="alert-dialog-title">Alert</div>
+          <div class="alert-dialog-content">
+            Do you want to delete this vocabulary?
+          </div>
+          <div class="alert-dialog-footer">
+            <ons-alert-dialog-button id="alert-cancel">cancel</ons-alert-dialog-button>
+            <ons-alert-dialog-button id="alert-delete">delete</ons-alert-dialog-button>
+          </div>
+        </ons-alert-dialog>
+    </template>
 <script type="module" src="script.js"></script>
-<script type="module" src="tasks-db.js"></script>
+<script type="module" src="words-db.js"></script>
 </body>
 </html>
