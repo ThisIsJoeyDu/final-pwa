@@ -12,6 +12,7 @@
 }
 
 #add-task-button{
+    text-align: center;
     width: 50%;
 }
 
@@ -21,11 +22,11 @@
     font-size: 40px;
     font-weight: bold;
     position: fixed;
-    right: -390px;
-    bottom: 60px;
+    right: -90%;
+    bottom: 10%;
     border-radius: 70px;
-    padding-top: 10px;
-    padding-left: 14px;
+    padding-top: 13px;
+    text-align: center;
 }
 
 #page2-center {
