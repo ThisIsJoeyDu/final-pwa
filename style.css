@@ -5,6 +5,25 @@
     padding: 20px;
 }
 
+#search-button-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+#add-task-button{
+    width: 50%;
+}
+
+#add-word{
+    font-size: large;
+    font-weight: bold;
+    position: fixed;
+    right: -390px;
+    bottom: 60px;
+    border-radius: 55%;
+}
+
 #page2-center {
     display: flex;
     flex-direction: column;
@@ -24,8 +43,9 @@
 }
 
 .item-container .center {
-    padding: 4px;
+    padding: 8px;
     margin-right: 10px;
+    border-radius: 10px;
     background-color: lightgray;
 }
 

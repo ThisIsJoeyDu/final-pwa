@@ -1,9 +1,10 @@
 // import { get } from "http";
 import WordsDB from "./words-db.js";
 
-var tasks = [];
+var words = [];
 let swRegistration = null;
 window.fn = {};
+var apiUrl = '';
 
 //tab change
 document.addEventListener('prechange', function(event) {
@@ -13,56 +14,62 @@ document.addEventListener('prechange', function(event) {
       if(event.index == 0) {
         // refresh the list
         // clear the list
-        tasks = [];
-        // get all tasks
+        words = [];
+        // get all words
         getAll();
       }
 });
 
 // document ready
 $('document').ready(function() {
+    console.log('document ready');
     //registerServiceWorker; 
     registerServiceWorker(); 
     // binding add task button
     $('#add-task-button').on('click', searchWord);
+    $('#add-word').on('click', addWord);
+    $('#choose-sel').on('change', (event) => {
+        editSelects(event);
+    });
+
     $('#notification-switch').on('change', e => {
         if (e.originalEvent.value) {
             requestAction();
         }
     });
-    // get all tasks
+    // get all words
     getAll();
 });
 
-function createListItem(task) {
+function createListItem(item) {
+    console.log(item);
     return ons.createElement(
         "<div class='item-container'>" + 
         "<ons-list-item  id='list-item'>" +
         '<div class="center">' +
-        '<span class="list-item__title">' + task.title + '</span><span class="list-item__subtitle">' + task.des + '</span>' +
-        '</span><span class="list-item__subtitle">' + task.date + '</span>' +
+        '<span class="list-item__title">' + item.word + '</span><span class="list-item__subtitle">' + item.level + '</span>' +
         '</div>' +
         '</ons-list-item>' +
         "</div>"
     );
 }
 
-// get all tasks
+// get all words
 function getAll() {
     WordsDB.open()
     .then(() => {
         WordsDB.getAll()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                tasks.push(doc.data());
+                words.push(doc.data());
             });
             var infiniteList = document.getElementById('infinite-list');
             infiniteList.delegate = {
                 createItemContent: function(i) {
-                    return createListItem(tasks[i]);
+                    return createListItem(words[i]);
                 },
                 countItems: function() {
-                    return tasks.length;
+                    return words.length;
                 }
             };
             infiniteList.refresh();
@@ -71,10 +78,12 @@ function getAll() {
                 item.addEventListener('click', function() {
                     createAlertDialog(querySnapshot.docs[index]);
                 });
-            });
 
-            console.log(tasks);
-            if (tasks.length == 0) {
+                // item.addEventListener('longpress', function() {
+                //     console.log('long press');
+                // });
+            });
+            if (words.length == 0) {
                 $('#no-data-container').show();
             } else {
                 $('#no-data-container').hide();
@@ -88,34 +97,28 @@ function getAll() {
 }
 
 var addWord = function() {
-    var title = $('#task-title').val();
-    let des = $('#task-des').val();
-    let date = $('#task-date').val();
-
-    if (title == '') {
-        ons.notification.alert('Title is required!');
+    var word = $('#search-input').val();
+    if (word == '') {
+        ons.notification.toast('Please input the word!', { timeout: 1000, animation: 'fall' });
         return;
     }
-
-    if (des == '') {
-        ons.notification.alert('Description is required!');
+    if (apiUrl == '') {
+        ons.notification.toast('Please search the word first!', { timeout: 1000, animation: 'fall' });
         return;
     }
-
-    if (date == '') {
-        ons.notification.alert('Date is required!');
-        return;
-    }
-
+    var level = $('#choose-sel').val();
     WordsDB.open()
     .then(() => {
-        WordsDB.addNewSong(title, des, date)
+        WordsDB.addNewSong(word, level, apiUrl)
         .then((docRef) => {
             ons.notification.toast('Add success!', { timeout: 1000, animation: 'fall' });
             // clear the input
-            $('#task-title').val('');
-            $('#task-des').val('');
-            $('#task-date').val('');
+            $('#search-input').val('');
+            $('#choose-sel').val('low');
+            apiUrl = '';
+
+            // clear content
+            $('#result-container').html('');
         })
         .catch((error) => {
             ons.notification.alert(error);
@@ -131,9 +134,9 @@ function registerServiceWorker() {
             swRegistration = registration;
             // listenMessage();
             navigator.serviceWorker.addEventListener('message', event => {
-                let message = event.data;
-                let titleShow = $('#title-show');
-                titleShow.html(message);
+                // let message = event.data;
+                // let titleShow = $('#title-show');
+                // titleShow.html(message);
             });
         })
         .catch(error => {
@@ -171,22 +174,19 @@ function sendAction() {
 
 function notification(registration) {
     // subscription available
-    const title = $('#title').val();
-    const body = $('#body').val();
     const options = {
-        body: body,
+        // title: "Time to learn!",
+        body: "Time to learn! You have a new word to learn!",
         icon: './images/192@2x.png',
         actions: [
-            { action: 'agree', title: 'Agree' },
-            { action: 'disagree', title: 'Disagree' }
-        ]
+            { action: 'konw', title: 'Got it!' },
+        ],
     };
-    swRegistration.showNotification(title, options);
+    swRegistration.showNotification("Time to learn!", options);
 }
 
 // alert view
 var createAlertDialog = function(doc) {
-    console.log(doc);
     var dialog = document.getElementById('my-alert-dialog');
     if (dialog) {
         dialog.show();
@@ -196,7 +196,7 @@ var createAlertDialog = function(doc) {
           dialog.show();
           $('#alert-cancel').on('click', alertCancel);
           $('#alert-delete').on('click', () => {
-              deleteTask(doc);
+              deleteWord(doc);
           });
         });
     }
@@ -212,14 +212,14 @@ function hideAlertDialog() {
       .remove();
 }
 
-function deleteTask(doc) {
+function deleteWord(doc) {
     hideAlertDialog();
-    TasksDB.open()
+    WordsDB.open()
     .then(() => {
-        TasksDB.remove(doc)
+        WordsDB.remove(doc)
         .then(() => {
             ons.notification.toast('Delete success!', { timeout: 1000, animation: 'fall' });
-            tasks = [];
+            words = [];
             getAll();
         })
         .catch((error) => {
@@ -231,8 +231,12 @@ function deleteTask(doc) {
 
 
 function searchWord() {
-    var word = document.getElementById('word-input').value.trim().toLowerCase();
-    var apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + word;
+    if (document.getElementById('search-input').value.trim() === '') {
+      displayError('Error: Please enter a word to search.');
+      return;
+    }
+    var word = document.getElementById('search-input').value.trim().toLowerCase();
+    apiUrl = 'https://api.dictionaryapi.dev/api/v2/entries/en/' + word;
 
     fetch(apiUrl)
       .then(response => {
@@ -245,7 +249,6 @@ function searchWord() {
         displayResult(data);
       })
       .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
         displayError('Error: Unable to fetch data. Please try again later.');
       });
   }
@@ -284,14 +287,7 @@ function searchWord() {
 
   function editSelects(event) {
     document.getElementById('choose-sel').removeAttribute('modifier');
-    if (event.target.value == 'material' || event.target.value == 'underbar') {
+    if (event.target.value == 'low' || event.target.value == 'normal' || event.target.value == 'high') {
       document.getElementById('choose-sel').setAttribute('modifier', event.target.value);
     }
-  }
-  function addOption(event) {
-    const option = document.createElement('option');
-    var text = document.getElementById('optionLabel').value;
-    option.innerText = text;
-    text = '';
-    document.getElementById('dynamic-sel').appendChild(option);
   }

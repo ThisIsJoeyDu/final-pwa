@@ -42,13 +42,13 @@ class WordsDB {
     }
 
     //add new song
-    addNewSong(title, des, date) {
+    addNewSong(word, level, url) {
         return new Promise((resolve, reject) => {
-            const dbCollection = collection(this.db, "tasks");
+            const dbCollection = collection(this.db, "vocabulary");
             addDoc(dbCollection, {
-                title: title,
-                des: des,
-                date: date
+                word: word,
+                level: level,
+                url: url
             })
             .then((docRef) => {
                 resolve(docRef);
@@ -62,8 +62,7 @@ class WordsDB {
     // get all songs
     getAll() {
         return new Promise((resolve, reject) => {
-            const tasks = [];
-            const dbCollection = collection(this.db, "tasks");
+            const dbCollection = collection(this.db, "vocabulary");
             getDocs(dbCollection)
             .then((querySnapshot) => {
                 resolve(querySnapshot);
@@ -74,11 +73,10 @@ class WordsDB {
         });
     }
 
-    // delete song
-    // remove song
+    // delete word
     remove(item) {
         return new Promise((resolve, reject) => {
-            const dbCollection = collection(this.db, "tasks");
+            const dbCollection = collection(this.db, "vocabulary");
             const docRef = doc(dbCollection, item.id);
             deleteDoc(docRef)
             .then(() => {
