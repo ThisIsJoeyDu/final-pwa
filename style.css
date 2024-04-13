@@ -16,12 +16,15 @@
 }
 
 #add-word{
-    font-size: large;
+    width: 70px;
+    height: 70px;
+    font-size: 40px;
     font-weight: bold;
     position: fixed;
     right: -390px;
     bottom: 60px;
-    border-radius: 55%;
+    border-radius: 70px;
+    padding-top: 10px;
 }
 
 #page2-center {
